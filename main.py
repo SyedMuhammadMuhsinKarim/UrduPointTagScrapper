@@ -64,21 +64,11 @@ for item in category:
     categories.append(list(set(category_per_item)))
     categories_links.append(list(set(category_link_per_item)))
 
-try:
-    timefinder_reg = re.compile("[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\+[0-9]{4}")
-    news_time = [re.findall(timefinder_reg, json.dumps(elem.find_all("script", attrs={'type': 'application/ld+json'})[3].contents))[0] for elem in content_posts]
-    # for elem in content_posts:
-    #    json_data = elem.find_all("script", attrs={'type': 'application/ld+json'})[3]
-    #    print(re.findall(timefinder_reg, json.dumps(json_data.contents))[0])
 
-    df = DataFrame([headlines, categories, news_time],
-                   index=['headlines', 'categories', 'time']).T
-    print(df)
-except Exception as err:
-    print(err)
-    df = DataFrame([headlines, categories], index=['headlines',
-                                                   'categories']).T
-    print(df)
+timefinder_reg = re.compile("[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\+[0-9]{4}")
+news_time = [re.findall(timefinder_reg, json.dumps(elem.find_all("script", attrs={'type': 'application/ld+json'})[3].contents))[0] for elem in content_posts]
+df = DataFrame([headlines, categories, news_time], index=['headlines', 'categories', 'time']).T
+print(df)
 
 end_event = time.time()
 print(end_event - start_event)
