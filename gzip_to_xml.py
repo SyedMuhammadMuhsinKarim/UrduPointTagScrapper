@@ -1,5 +1,6 @@
 import requests
 import gzip
+from io import BytesIO
 
 def gzip_to_xml(link):
   r = requests.get(link ,stream=True)

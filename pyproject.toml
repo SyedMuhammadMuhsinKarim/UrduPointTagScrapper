@@ -9,6 +9,8 @@ python = "^3.8"
 aiohttp = "^3.7.4"
 bs4 = "^0.0.1"
 nest-asyncio = "^1.5.1"
+lxml = "^4.6.3"
+pandas = "^1.2.3"
 
 [tool.poetry.dev-dependencies]
 
