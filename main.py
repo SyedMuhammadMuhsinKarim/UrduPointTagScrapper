@@ -9,7 +9,7 @@ import re
 from pandas import Series, DataFrame
 
 # My Modules
-from get_content import Get_Content
+from get_content import Get_Content #
 from parallel_requests import ParallelRequests
 from gzip_to_xml import gzip_to_xml
 
@@ -28,7 +28,7 @@ news_links = news_links.loc[~news_links.isnull()]
 
 # Get Contents by aSyncIO
 start = time.time()
-content_posts = ParallelRequests(news_links.head(50).to_list()).run()
+content_posts = ParallelRequests(news_links.to_list()).run()
 loop = asyncio.get_event_loop()
 future = asyncio.ensure_future(content_posts)
 content_posts = loop.run_until_complete(future)
@@ -64,11 +64,20 @@ for item in category:
     categories.append(list(set(category_per_item)))
     categories_links.append(list(set(category_link_per_item)))
 
-
+# Get Times of the posts
 timefinder_reg = re.compile("[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\+[0-9]{4}")
 news_time = [re.findall(timefinder_reg, json.dumps(elem.find_all("script", attrs={'type': 'application/ld+json'})[3].contents))[0] for elem in content_posts]
+
+# Get DataFrames
 df = DataFrame([headlines, categories, news_time], index=['headlines', 'categories', 'time']).T
 print(df)
+
+import datetime
+
+print(url.split("/")[6].split(".")[0])
+times = datetime.datetime(2020, 5, 17)
+
+df.to_csv('NewsData/2021/Mar/2021-03-27.csv', encoding='utf-8-sig')
 
 end_event = time.time()
 print(end_event - start_event)
