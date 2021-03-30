@@ -5,10 +5,11 @@ from gzip_to_xml import gzip_to_xml
 from get_elements import Get_Elements
 from link_cleaner import post_link_cleaning
 from time_extaractors import post_time_extraction
+from dirctory import check_dir
 
-dd = "02"
+dd = "28"
 yyyy = "2021"
-mm = "03"
+mm = "02"
 
 # Variables
 url = f'https://www.urdupoint.com/sitemap/daily/data/{yyyy}/{yyyy}-{mm}-{dd}.xml.gz'
@@ -37,6 +38,8 @@ except:
   df = DataFrame([headlines, categories], index=['headlines', 'categories',]).T
   print(df) # For Debbugg
 
-df.to_csv(f'NewsData/{2021}/{mm}/{yyyy}-{mm}-{dd}.csv', encoding='utf-8-sig')
+check_dir(yyyy, mm)
+
+df.to_csv(f'NewsData/{yyyy}/{mm}/{yyyy}-{mm}-{dd}.csv', encoding='utf-8-sig')
 
 print(time.time() - start_event) # For Debbugg
