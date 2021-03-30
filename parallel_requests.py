@@ -20,3 +20,8 @@ class ParallelRequests:
         task = asyncio.ensure_future(fetch_resp)
         tasks.append(task)
       return await asyncio.gather(*tasks)
+
+def calling_event(content):
+  loop = asyncio.get_event_loop()
+  future = asyncio.ensure_future(ParallelRequests(content.to_list()).run())
+  return loop.run_until_complete(future)

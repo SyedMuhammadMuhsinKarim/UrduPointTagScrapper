@@ -8,12 +8,12 @@ import re
 from pandas import DataFrame
 
 # My Modules
-from parallel_requests import ParallelRequests
+from parallel_requests import calling_event
 from gzip_to_xml import gzip_to_xml
 from get_elements import Get_Elements
 from link_cleaner import post_link_cleaning
 
-dd = "08"
+dd = "04"
 yyyy = "2021"
 mm = "03"
 
@@ -29,12 +29,9 @@ news_links = post_link_cleaning(content_xml)
 
 # Get Contents by aSyncIO
 start = time.time()  # For Debbugg
-loop = asyncio.get_event_loop()
-future = asyncio.ensure_future(ParallelRequests(news_links.to_list()).run())
-content_posts = loop.run_until_complete(future)
-end = time.time()  # For Debbugg
-print(f"aSyncIo\nTime Elapsed: {end-start} seconds, \
-    \n requests per second: {news_links.shape[0]//int(end-start)}")
+content_posts = calling_event(news_links)
+print(f"aSyncIo\nTime Elapsed: {time.time()-start} seconds, \
+    \n requests per second: {news_links.shape[0]//int(time.time()-start)}")
 
 # Get Headlines/Title of the posts
 headlines=Get_Elements(content_posts).get_headlines()
