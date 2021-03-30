@@ -9,12 +9,15 @@ import re
 from pandas import Series, DataFrame
 
 # My Modules
-from get_content import Get_Content #
 from parallel_requests import ParallelRequests
 from gzip_to_xml import gzip_to_xml
 
+dd = "18"
+yyyy = "2021"
+mm = "03"
+
 # Variables
-url = 'https://www.urdupoint.com/sitemap/daily/data/2021/2021-03-27.xml.gz'
+url = f'https://www.urdupoint.com/sitemap/daily/data/{yyyy}/{yyyy}-{mm}-{dd}.xml.gz'
 start_event = time.time()
 # Open gZip content and get XML content
 content_xml = gzip_to_xml(url)
@@ -37,47 +40,24 @@ print(f"aSyncIo\nTime Elapsed: {end-start} seconds, \n \
     requests per second: {news_links.shape[0]//int(end-start)}")
 
 # Get Headlines/Title of the posts
-headlines_tags = Get_Content(content_posts, 'h1', 'class',
-                             'fs24 lh48 urdu ar rtl').content()
-headlines = [
-    headlines_tags[i].text if headlines_tags[i] != None else np.nan
-    for i in range(len(headlines_tags))
-]
-
-# Get Categories/Tags of the posts
-category_tag = [
-    elem.find('div', attrs={"class": "tagcloud rtl ar urdu"})
-    for elem in content_posts
-]
-category = [
-    category_tag[i].find_all('a') if category_tag[i] != None else []
-    for i in range(len(category_tag))
-]
-categories = []
-categories_links = []
-for item in category:
-    category_per_item = []
-    category_link_per_item = []
-    for elm in item:
-        category_per_item.append(elm.text)
-        category_link_per_item.append(elm.attrs['href'])
-    categories.append(list(set(category_per_item)))
-    categories_links.append(list(set(category_link_per_item)))
+from get_elements import Get_Elements
+headlines=Get_Elements(content_posts).get_headlines()
+categories,categories_links = Get_Elements(content_posts).get_category()
 
 # Get Times of the posts
-timefinder_reg = re.compile("[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\+[0-9]{4}")
-news_time = [re.findall(timefinder_reg, json.dumps(elem.find_all("script", attrs={'type': 'application/ld+json'})[3].contents))[0] for elem in content_posts]
+try: 
+  timefinder_reg = re.compile("[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\+[0-9]{4}")
+  news_time = [re.findall(timefinder_reg, json.dumps(elem.find_all("script", attrs={'type': 'application/ld+json'})[3].contents))[0] for elem in content_posts]
+  df = DataFrame([headlines, categories, news_time], index=['headlines', 'categories', 'time']).T
+  print(df)
+except Exception as e:
+  print(e)
+  # Get DataFrames
+  df = DataFrame([headlines, categories], index=['headlines', 'categories',]).T
+  print(df)
 
-# Get DataFrames
-df = DataFrame([headlines, categories, news_time], index=['headlines', 'categories', 'time']).T
-print(df)
-
-import datetime
-
-print(url.split("/")[6].split(".")[0])
-times = datetime.datetime(2020, 5, 17)
-
-df.to_csv('NewsData/2021/Mar/2021-03-27.csv', encoding='utf-8-sig')
+print(url.split("/")[7].split(".")[0].split("-"))
+df.to_csv(f'NewsData/{2021}/Mar/{yyyy}-{mm}-{dd}.csv', encoding='utf-8-sig')
 
 end_event = time.time()
 print(end_event - start_event)
