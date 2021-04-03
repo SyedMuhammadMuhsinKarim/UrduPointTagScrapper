@@ -1,6 +1,9 @@
 import pandas as pd
 from pandas import DataFrame
 import datetime
+from pymongo import MongoClient
+import dns
+
 from parallel_requests import calling_event
 from gzip_to_xml import gzip_to_xml
 from get_elements import Get_Elements
@@ -28,16 +31,10 @@ def df_to_json(yyyy, mm, dd):
 try: 
   news_time = post_time_extraction(content_posts)
   df = DataFrame([headlines, categories, news_time], index=['headlines', 'categories', 'time']).T
-  # check_dir(yyyy, mm)
-  # df_to_json(yyyy, mm, dd)
 except:
   df = DataFrame([headlines, categories], index=['headlines', 'categories',]).T
-  df['time'] = datetime.date(int(yyyy), int(mm), int(dd)).isoformat() # datetime.date(2018, 11, 13)
-  # check_dir(yyyy, mm)
-  # df_to_json(yyyy, mm, dd)
+  df['time'] = datetime.date(int(yyyy), int(mm), int(dd)).isoformat()
 
-from pymongo import MongoClient
-import dns
 client =  MongoClient("mongodb+srv://demo:zRH4JBa8ED7nDSnE@cluster0.al9iw.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 db = client['newses']
 collection = db['news_datasets']
