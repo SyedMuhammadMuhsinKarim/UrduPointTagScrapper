@@ -3,11 +3,19 @@ from aiohttp import ClientSession
 from bs4 import BeautifulSoup as bs
 
 class ParallelRequests:
-  def __init__(self, urls, pars = 'html.parser'):
+  pars = 'html.parser'
+  def __init__(self, urls):
     self.urls = urls
-    self.pars = pars
 
   async def __fetch(self, url, session):
+    """
+        1. The function takes in three arguments:
+            - url: the url to be fetched
+            - session: the session to be used to fetch the url
+            - self.pars: the parameters to be passed to the function
+        2. The function then uses the session to fetch the url.
+        3. The function then reads the response from the url.
+    """
     async with session.get(url) as response:
        resp = await response.read()
        return bs(resp, self.pars, from_encoding="utf-8")
